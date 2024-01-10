@@ -45,7 +45,7 @@ export class ColbyChart {
         this.element.centerY += moveY;
         const element = this.element
         if (element) {
-            const { elements, options } = element           
+            const { elements, options } = element
 
             if (elements && elements.length) {
                 if (options.type == 'line') {
@@ -122,69 +122,34 @@ const initChart = () => {
 }
 const updateChart = () => {
     if (ColbyChart?.instance) {
-        console.log('[ColbyChart.instance.options]', ColbyChart.instance.getChart().options)
         const chart = ColbyChart.instance.getChart()
         if (!chart) return;
-        const newAnnotations = [
-            {                
-                type: 'line',
-                id: 'yLine',
-                yMin: 60,
-                yMax: 60,
-                yScaleID: 'y',
-                borderColor: 'rgb(255, 99, 132)',
-                borderWidth: 2,
-                label: {
-                    display: true,
-                    content: ['Line annotation'],
-                    textAlign: 'center',
-                },
-            },
-            {
-                type: 'box',
-                backgroundColor: 'rgba(165, 214, 167, 0.2)',
-                borderColor: 'rgb(165, 214, 167)',
-                borderWidth: 2,
-                label: {
-                    display: true,
-                    content: ['Box annotation', 'to drag'],
-                    textAlign: 'center'
-                },
-                xMax: 'May',
-                xMin: 'April',
-                xScaleID: 'x',
-                yMax: 75,
-                yMin: 25,
-                yScaleID: 'y'
-            },
-            {
-                type: 'box',
-                backgroundColor: 'rgba(165, 214, 167, 0.2)',
-                borderColor: 'rgb(165, 214, 167)',
-                borderWidth: 2,
-                label: {
-                    display: true,
-                    content: ['Box annotation', 'to drag'],
-                    textAlign: 'center'
-                },
-                xMax: 'May',
-                xMin: 'April',
-                xScaleID: 'x',
-                yMax: 75,
-                yMin: 25,
-                yScaleID: 'y'
-            },
-            {
-                type: 'point',
-                backgroundColor: 'rgba(0, 255, 255, 0.4)',
-                borderWidth: 2,
-                borderColor: 'black',
-                radius: 20,
-                xValue: 'March',
-                yValue: 50
-            }
-        ]
-        chart.options.plugins.annotation.annotations = newAnnotations
+        const newAnnotations = window.colbyChartInfo?.annotation?.annotations ?? {}
+        const annotations = {
+            // line2: {
+            //     id: "line2",
+            //     "type": "line",
+            //     "borderColor": "#d3d3d3",
+            //     "borderWidth": "1",
+            //     "borderDash": [
+            //         5,
+            //         5
+            //     ],
+            //     "label": {
+            //         "content": [
+            //             "Test"
+            //         ],
+            //         "display": true,
+            //         "textAlign": "center"
+            //     },
+            //     "yScaleID": "y",
+            //     "yMin": "15",
+            //     "yMax": "15"
+            // }
+        }
+        console.log('[newAnnotations]', newAnnotations)
+
+        chart.options.plugins.annotation.annotations = { ...annotations, ...newAnnotations }
 
         ColbyChart.instance.updateChart()
     }
@@ -195,7 +160,9 @@ function getInitialConfig() {
         labels: [],
         datasets: [],
     }
-    const annotations = []
+    const annotations = {
+
+    }
     if (colbyChartInfo) {
         const { createDatasets } = colbyChartInfo
         const colorArray = [

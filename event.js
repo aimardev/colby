@@ -1,10 +1,11 @@
 
-import { updateChart as updateColChart, ColbyChart} from './col-chart'// windows event 
+import { updateChart as updateColChart, ColbyChart } from './col-chart'// windows event 
 // import { openTab } from './actions';
 import jQuery from "jquery";
 
 function updateChart() {
     updateChartConfig()
+    updateAnnoation()
     updateColChart();
 }
 function getChartConfigFormData(ref) {
@@ -16,46 +17,94 @@ function getChartConfigFormData(ref) {
     });
     return formDataObject
 }
+function updateAnnoation() {
+    const formData = getChartConfigFormData('#chart-config')
+    console.log('[formData]', formData)
+    const annotationValue = { annotations: [] }
+
+    const {
+        selectedXAxis,
+        lineAxis,
+        linePos,
+        lineLabel,
+        lineStyle,
+        lineColor,
+        lineThickness,
+        arrowXMin,
+        arrowXMax,
+        arrowYMin,
+        arrowYMax,
+        doubleArrow,
+        arrowLabel,
+        arrowColor,
+        showLegend,
+        isSwitched,
+        showLabel } = formData
+
+
+    if (linePos) {
+        const lineAnnotation = {
+            type: "line",
+            id: "line1",
+            borderColor: "rgb(255, 99, 132)",
+            borderWidth: 2,
+
+        };
+
+
+        if (lineStyle) {
+            if (lineStyle == "dashed") {
+                lineAnnotation.borderDash = [5, 5];
+            } else if (lineStyle == "wave") {
+                lineAnnotation.borderDash = [10, 5, 5];
+            }
+        }
+
+        if (lineColor) {
+            lineAnnotation.borderColor = lineColor;
+        }
+
+        if (lineThickness) {
+            lineAnnotation.borderWidth = lineThickness;
+        }
+
+        if (lineLabel) {
+            lineAnnotation.label = {
+                content: [lineLabel],
+                display: true,
+                textAlign: 'center',
+            };
+        }
+        if (lineAxis == "y") {
+            lineAnnotation.yScaleID = "y"
+            lineAnnotation.yMin = linePos
+            lineAnnotation.yMax = linePos
+        } else if (lineAxis == "x") {
+            lineAnnotation.xScaleID = "x"
+            lineAnnotation.xMin = linePos
+            lineAnnotation.xMax = linePos
+        }
+        annotationValue.annotations.line = lineAnnotation;
+    }
+
+    window.colbyChartInfo.annotation = annotationValue
+}
 function updateChartConfig() {
     const formData = getChartConfigFormData('#chart-config')
     console.log('[formData]', formData)
     const chartConfig = window.colbyChartInfo
-    const chart = ColbyChart.instance.getChart()    
+    const chart = ColbyChart.instance.getChart()
     chartConfig.options = ColbyChart.instance.getChart().options
 
+
     /**
-     * {
-    "title": "Default Title",
-    "xAxisDataset": "0",
-    "stacked": "false",
-    "switch": "false",
-    "xMin": "",
-    "xMax": "",
-    "yMin": "",
-    "yMax": "",
-    "yTitle": "",
-    "lineAxis": "y",
-    "linePos": "11",
-    "lineLabel": "Test",
-    "lineStyle": "dashed",
-    "lineColor": "#d3d3d3",
-    "lineThickness": "1",
-    "arrowXMin": "",
-    "arrowXMax": "",
-    "arrowYMin": "",
-    "arrowYMax": "",
-    "doubleArrow": "false",
-    "arrowLabel": "",
-    "arrowColor": "#d3d3d3",
-    "titleFont": "Lora",
-    "titleColor": "#008080",
-    "titleSize": "18"
-}
+     * Line Annoation
      */
 
 
 
-    const { 
+    const {
+        selectedXAxis,
         lineAxis,
         linePos,
         lineLabel,
@@ -77,148 +126,111 @@ function updateChartConfig() {
     const boxAnnotationsDiv = $("#boxAnnotations");
 
 
-    if (isSwitched === "true") {
-        chartConfig.options.indexAxis = "y";
-    } else if (chartConfig.options.indexAxis == "y") {
-        delete chartConfig.options.indexAxis;
-    }
+    // if (isSwitched === "true") {
+    //     chartConfig.options.indexAxis = "y";
+    // } else if (chartConfig.options.indexAxis == "y") {
+    //     delete chartConfig.options.indexAxis;
+    // }
 
-    chartConfig.options.scales.x.title.text = datasets[selectedXAxis].label;
-
-    chartConfig.options.scales.y.title.text =
-        isSwitched === "true" ? datasets[selectedXAxis].label : form.yTitle.value;
-    chartConfig.data.labels = datasets[selectedXAxis].data;
-    chartConfig.data.datasets = selectedDatasets.map(
-        (datasetIndex) => datasets[datasetIndex]
-    );
-    var xMinValue = Math.max(...datasets[selectedXAxis].data);
-    var xMaxValue = Math.min(...datasets[selectedXAxis].data);
-    var yMinValue = Math.min(
-        ...selectedDatasets.map((datasetIndex) =>
-            Math.min(...datasets[datasetIndex].data)
-        )
-    );
-    var yMaxValue = Math.max(
-        ...selectedDatasets.map((datasetIndex) =>
-            Math.max(...datasets[datasetIndex].data)
-        )
-    );
-
-    // chartConfig.options.plugins.title.text = form.title.value;
-    // chartConfig.options.plugins.title.font = {
-    //     family: form.titleFont.value,
-    //     size: parseInt(form.titleSize.value),
-    // };
-    // chartConfig.options.plugins.title.color = form.titleColor.value;
     // chartConfig.options.scales.x.title.text = datasets[selectedXAxis].label;
-    // chartConfig.options.scales.y.title.text = form.yTitle.value;
-    // chartConfig.options.scales.x.stacked = form.stacked.value === "true";
-    // chartConfig.options.scales.y.stacked = form.stacked.value === "true";
 
-    // chartConfig.options.scales.y.suggestedMin = form.yMin.value
-    //     ? parseFloat(form.yMin.value)
+    // chartConfig.options.scales.y.title.text =
+    //     isSwitched === "true" ? datasets[selectedXAxis].label : form.yTitle;
+    // chartConfig.data.labels = datasets[selectedXAxis].data;
+    // chartConfig.data.datasets = selectedDatasets.map(
+    //     (datasetIndex) => datasets[datasetIndex]
+    // );
+    // var xMinValue = Math.max(...datasets[selectedXAxis].data);
+    // var xMaxValue = Math.min(...datasets[selectedXAxis].data);
+    // var yMinValue = Math.min(
+    //     ...selectedDatasets.map((datasetIndex) =>
+    //         Math.min(...datasets[datasetIndex].data)
+    //     )
+    // );
+    // var yMaxValue = Math.max(
+    //     ...selectedDatasets.map((datasetIndex) =>
+    //         Math.max(...datasets[datasetIndex].data)
+    //     )
+    // );
+
+    // chartConfig.options.plugins.title.text = form.title;
+    // chartConfig.options.plugins.title.font = {
+    //     family: form.titleFont,
+    //     size: parseInt(form.titleSize),
+    // };
+    // chartConfig.options.plugins.title.color = form.titleColor;
+    // chartConfig.options.scales.x.title.text = datasets[selectedXAxis].label;
+    // chartConfig.options.scales.y.title.text = form.yTitle;
+    // chartConfig.options.scales.x.stacked = form.stacked === "true";
+    // chartConfig.options.scales.y.stacked = form.stacked === "true";
+
+    // chartConfig.options.scales.y.suggestedMin = form.yMin
+    //     ? parseFloat(form.yMin)
     //     : yMinValue;
-    // chartConfig.options.scales.y.suggestedMax = form.yMax.value
-    //     ? parseFloat(form.yMax.value)
+    // chartConfig.options.scales.y.suggestedMax = form.yMax
+    //     ? parseFloat(form.yMax)
     //     : yMaxValue;
-    // chartConfig.options.scales.x.suggestedMin = form.xMin.value
-    //     ? parseFloat(form.xMin.value)
+    // chartConfig.options.scales.x.suggestedMin = form.xMin
+    //     ? parseFloat(form.xMin)
     //     : xMinValue;
-    // chartConfig.options.scales.x.suggestedMax = form.xMax.value
-    //     ? parseFloat(form.xMax.value)
+    // chartConfig.options.scales.x.suggestedMax = form.xMax
+    //     ? parseFloat(form.xMax)
     //     : xMaxValue;
 
 
 
-    // var annotationValue = { annotations: [] };
-    // if (linePos) {
-    //     var lineAnnotation = {
-    //         type: "line",
-    //         borderColor: "rgb(255, 99, 132)",
-    //         borderWidth: 2,
-    //     };
-
-    //     if (lineStyle) {
-    //         if (lineStyle == "dashed") {
-    //             lineAnnotation.borderDash = [5, 5];
-    //         } else if (lineStyle == "wave") {
-    //             lineAnnotation.borderDash = [10, 5, 5];
-    //         }
-    //     }
-
-    //     if (lineColor) {
-    //         lineAnnotation.borderColor = lineColor;
-    //     }
-
-    //     if (lineThickness) {
-    //         lineAnnotation.borderWidth = lineThickness;
-    //     }
-
-    //     if (lineLabel) {
-    //         lineAnnotation.label = {
-    //             content: lineLabel,
-    //             enabled: true,
-    //         };
-    //     }
 
 
-    //     lineAnnotation.draggable = true;
-    //     lineAnnotation.onDrag = function (e, annotation) {
-    //         console.log("drag", annotation);
-    //     };
-    //     annotationValue.annotations.push(lineAnnotation);
-    // }
-
-    // if (arrowXMin && arrowXMax) {
-    //     var arrowDisplay = false;
-    //     if (arrowLabel) {
-    //         arrowDisplay = true;
-    //     }
-    //     var arrowAnnotation = {
-    //         type: "line",
-    //         borderColor: arrowColor,
-    //         borderWidth: 2,
-    //         curve: true,
-    //         label: {
-    //             display: arrowDisplay,
-    //             backgroundColor: "rgb(211,211,211)",
-    //             borderRadius: 0,
-    //             color: "rgb(169,169,169)",
-    //             content: arrowLabel,
-    //         },
-    //         arrowHeads: {
-    //             start: {
-    //                 display: doubleArrow,
-    //                 borderColor: arrowColor,
-    //             },
-    //             end: {
-    //                 display: true,
-    //                 borderColor: arrowColor,
-    //             },
-    //         },
-    //         xMin: parseFloat(arrowXMin),
-    //         xMax: parseFloat(arrowXMax),
-    //         yMin: parseFloat(arrowYMin),
-    //         yMax: parseFloat(arrowYMax),
-    //         xScaleID: "x",
-    //         yScaleID: "y",
-    //         draggable: true,
-    //         onDragEnd: function (e, annotation) {
-    //             console.log("arrow drag", annotation);
-    //         },
-    //     };
-    //     annotationValue.annotations.arrow = arrowAnnotation;
-    // }
+    if (arrowXMin && arrowXMax) {
+        var arrowDisplay = false;
+        if (arrowLabel) {
+            arrowDisplay = true;
+        }
+        var arrowAnnotation = {
+            type: "line",
+            borderColor: arrowColor,
+            borderWidth: 2,
+            curve: true,
+            label: {
+                display: arrowDisplay,
+                backgroundColor: "rgb(211,211,211)",
+                borderRadius: 0,
+                color: "rgb(169,169,169)",
+                content: arrowLabel,
+            },
+            arrowHeads: {
+                start: {
+                    display: doubleArrow,
+                    borderColor: arrowColor,
+                },
+                end: {
+                    display: true,
+                    borderColor: arrowColor,
+                },
+            },
+            xMin: parseFloat(arrowXMin),
+            xMax: parseFloat(arrowXMax),
+            yMin: parseFloat(arrowYMin),
+            yMax: parseFloat(arrowYMax),
+            xScaleID: "x",
+            yScaleID: "y",
+            draggable: true,
+            onDragEnd: function (e, annotation) {
+                console.log("arrow drag", annotation);
+            },
+        };
+        annotationValue.annotations.arrow = arrowAnnotation;
+    }
 
     // for (var j = 0; j < boxAnnotationsDiv.children.length; j++) {
     //     var boxDiv = boxAnnotationsDiv.children[j];
     //     if (boxDiv && boxDiv.children.length >= 4) {
     //         console.log("checking box nodes");
-    //         var boxXMin = boxDiv.children[0].children[0].value;
-    //         var boxXMax = boxDiv.children[1].children[0].value;
-    //         var boxYMin = boxDiv.children[2].children[0].value;
-    //         var boxYMax = boxDiv.children[3].children[0].value;
-    //         var boxLabel = boxDiv.children[4].children[0].value;
+    //         var boxXMin = boxDiv.children[0].children[0];
+    //         var boxXMax = boxDiv.children[1].children[0];
+    //         var boxYMin = boxDiv.children[2].children[0];
+    //         var boxYMax = boxDiv.children[3].children[0];
+    //         var boxLabel = boxDiv.children[4].children[0];
 
     //         if (boxXMin && boxXMax && boxYMin && boxYMax) {
     //             annotationValue.annotations["box" + (j + 1)] = {
@@ -251,12 +263,12 @@ function updateChartConfig() {
     //     var labelDiv = labelAnnotationsDiv.children[i];
     //     if (labelDiv && labelDiv.children.length >= 7) {
     //         var labelAnchor = labelDiv.children[6].children[0].checked;
-    //         var labelX = labelDiv.children[0].children[0].value;
-    //         var labelY = labelDiv.children[1].children[0].value;
-    //         var labelText = labelDiv.children[2].children[0].value;
-    //         var labelColor = labelDiv.children[3].children[0].value;
-    //         var labelFont = labelDiv.children[4].children[0].value;
-    //         var labelSize = labelDiv.children[5].children[0].value;
+    //         var labelX = labelDiv.children[0].children[0];
+    //         var labelY = labelDiv.children[1].children[0];
+    //         var labelText = labelDiv.children[2].children[0];
+    //         var labelColor = labelDiv.children[3].children[0];
+    //         var labelFont = labelDiv.children[4].children[0];
+    //         var labelSize = labelDiv.children[5].children[0];
 
     //         var adjustValueX = 0;
     //         var adjustValueY = 0;
@@ -280,7 +292,7 @@ function updateChartConfig() {
     //         }
 
     //         if (labelX && labelY) {
-    //             let isStacked = form.stacked.value === "true";
+    //             let isStacked = form.stacked === "true";
     //             let correspondingYValue = findYValueForX(
     //                 chartData,
     //                 parseInt(labelX),
