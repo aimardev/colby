@@ -6,7 +6,7 @@
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <title>Vite App</title>
+  <title>App</title>
 </head>
 
 <body>
@@ -16,134 +16,100 @@
         <div class="form-container">
           <canvas id="myChart" style="box-sizing: border-box; display: block; height: 450px; width: 450px;" width="450"
             height="450"></canvas>
-          <div id="chartConfig">
-
-            <div id="tab-generalFields" data-tab="generalFields" class="tab-button active">
+          <!-- Chart Configuration -->
+          <form id="chart-config">
+            <div id="tab-general-fields" data-tab="general-fields" class="tab-button">
               General
             </div>
-            <div id="tab-xAxisFields" data-tab="xAxisFields" class="tab-button">X-Axis</div>
-            <div id="tab-yAxisFields" data-tab="yAxisFields" class="tab-button">Y-Axis</div>
-            <div id="tab-annotationsFields" data-tab="annotationsFields" class="tab-button">
+            <div id="tab-xAxis-fields" data-tab="xAxis-fields" class="tab-button">X-Axis</div>
+            <div id="tab-yAxis-fields" data-tab="yAxis-fields" class="tab-button">Y-Axis</div>
+            <div id="tab-annotations-fields" data-tab="annotations-fields" class="tab-button active">
               Annotations
             </div>
-            <div id="tab-styleFields" data-tab="styleFields" class="tab-button">Style</div>
+            <div id="tab-style-fields" data-tab="style-fields" class="tab-button">Style</div>
 
 
-            <div id="generalFields" class="tab-content" style="display: block;">
-              <label>
-                Title:
-                <input type="text" name="title" value="Default Title" onchange="updateChart()">
-              </label>
-              <label>
-                X-axis Dataset:
-                <select id="xAxisSelect" name="xAxisDataset" onchange="updateSelectOptions(); updateChart()">
-                  <option value="0">2017-08-02</option>
-                  <option value="1">3</option>
-                </select>
-              </label>
-              <label>
-                Plotted Datasets:
-                <div id="plotDatasetsCheckboxes"><input type="checkbox" id="dataset0" value="0"
-                    style="display: none;"><label for="dataset0" style="display: none;">2017-08-02</label><input
-                    type="checkbox" id="dataset1" value="1"><label for="dataset1">3</label></div>
-              </label>
-              <label>
-                Stacked:
-                <select name="stacked" onchange="updateChart()">
-                  <option value="true">True</option>
-                  <option value="false" selected="">False</option>
-                </select>
-              </label>
-              <label>
-                Switch rows and columns?
-                <select name="switch" onchange="updateChart()">
-                  <option value="true">True</option>
-                  <option value="false" selected="">False</option>
-                </select>
-              </label>
+            <div id="general-fields" class="tab-content" style="display: none;">
+              <label> Title: </label>
+              <input type="text" name="title" value="Default Title" class="colby-input">
+              <label> X-axis Dataset: </label>
+              <select id="xAxisSelect" name="xAxisDataset" class="colby-select">
+                <option value="0">2017-08-02</option>
+                <option value="1">3</option>
+              </select>
+              <label> Plotted Datasets: </label>
+              <div id="plotDatasetsCheckboxes">
+                <input type="checkbox" id="dataset0" value="0" style="display: none;">
+                <label for="dataset0" style="display: none;">2017-08-02</label>
+                <input type="checkbox" id="dataset1" value="1"><label for="dataset1">3</label>
+              </div>
+              <label> Stacked: </label>
+              <select name="stacked" class="colby-input">
+                <option value="true">True</option>
+                <option value="false" selected="">False</option>
+              </select>
+              <label> Switch rows and columns? </label>
+              <select name="switch" class="colby-input">
+                <option value="true">True</option>
+                <option value="false" selected="">False</option>
+              </select>
 
               <div>
-                <label>
-                  Show Labels
-                  <input type="checkbox" id="labelCheck" name="labelCheck" onchange="updateChart()">
-                </label>
+                <label> Show Labels </label>
+                <input type="checkbox" id="labelCheck" name="labelCheck" class="colby-input">
               </div>
 
               <div>
-                <label>
-                  Show Legend
-                  <input type="checkbox" id="legendCheck" name="legendCheck" onchange="updateChart()">
-                </label>
+                <label> Show Legend </label>
+                <input type="checkbox" id="legendCheck" name="legendCheck" class="colby-input">
               </div>
 
 
             </div>
 
 
-            <div id="xAxisFields" class="tab-content" style="display: none;">
-              <label>
-                X-Min:
-                <input type="number" name="xMin" value="" onchange="updateChart()">
-              </label>
-              <label>
-                X-Max:
-                <input type="number" name="xMax" value="" onchange="updateChart()">
-              </label>
+            <div id="xAxis-fields" class="tab-content" style="display: none;">
+              <label> X-Min: </label>
+              <input type="number" name="xMin" value="" class="colby-input">
+              <label> X-Max: </label>
+              <input type="number" name="xMax" value="" class="colby-input">
             </div>
 
 
-            <div id="yAxisFields" class="tab-content" style="display: none">
-              <label>
-                Y-Min:
-                <input type="number" name="yMin" value="" onchange="updateChart()">
-              </label>
-              <label>
-                Y-Max:
-                <input type="number" name="yMax" value="" onchange="updateChart()">
-              </label>
-              <label>
-                Y-Axis Title:
-                <input type="text" name="yTitle" value="" onchange="updateChart()">
-              </label>
+            <div id="yAxis-fields" class="tab-content" style="display: none">
+              <label> Y-Min: </label>
+              <input type="number" name="yMin" value="" class="colby-input">
+              <label> Y-Max: </label>
+              <input type="number" name="yMax" value="" class="colby-input">
+              <label> Y-Axis Title: </label>
+              <input type="text" name="yTitle" value="" class="colby-input">
             </div>
 
 
-            <div id="annotationsFields" class="tab-content" style="display: none">
+            <div id="annotations-fields" class="tab-content" style="display: block">
               <button type="button" class="section-button toggle-visibility" data-visibility="lineAnnotation">
                 Line Annotations
               </button>
               <div id="lineAnnotation" style="display: none">
-                <label>
-                  Axis:
-                  <select name="lineAxis" onchange="updateChart()">
-                    <option value="x">X</option>
-                    <option value="y" selected="">Y</option>
-                  </select>
-                </label>
-                <label>
-                  Axis Position:
-                  <input type="number" name="linePos" value="" onchange="updateChart()">
-                </label>
-                <label>
-                  Line Label:
-                  <input type="text" name="lineLabel" value="" onchange="updateChart()">
-                </label>
-                <label>
-                  Line Style:
-                  <select name="lineStyle" onchange="updateChart()">
-                    <option value="none">None</option>
-                    <option value="dashed" selected="">Dashed</option>
-                    <option value="wave">wave</option>
-                  </select>
-                </label>
-                <label>
-                  Line Color:
-                  <input type="color" name="lineColor" value="#D3D3D3" onchange="updateChart()">
-                </label>
-                <label>
-                  Line Thickness:
-                  <input type="number" name="lineThickness" value="1" onchange="updateChart()">
-                </label>
+                <label> Axis: </label>
+                <select name="lineAxis" class="colby-input">
+                  <option value="x">X</option>
+                  <option value="y" selected="">Y</option>
+                </select>
+                <label> Axis Position: </label>
+                <input type="number" name="linePos" value="10" class="colby-input">
+                <label> Line Label: </label>
+                <input type="text" name="lineLabel" value="Test" class="colby-input">
+                <label> Line Style: </label>
+                <select name="lineStyle" class="colby-input">
+                  <option value="none">None</option>
+                  <option value="dashed" selected="">Dashed</option>
+                  <option value="wave">wave</option>
+                </select>
+                <label> Line Color: </label>
+                <input type="color" name="lineColor" value="#D3D3D3" class="colby-input">
+                <label> Line Thickness: </label>
+                <input type="number" name="lineThickness" value="1" class="colby-input">
               </div>
 
 
@@ -152,10 +118,6 @@
                 Box Annotations
               </button>
               <div id="boxAnnotations" style="display: none"></div>
-
-
-
-
               <button type="button" class="section-button toggle-visibility" data-visibility="labelAnnotations">
                 Label Annotations
               </button>
@@ -165,56 +127,36 @@
                 Arrow Annotations
               </button>
               <div id="arrowAnnotation" style="display: none">
-                <label>
-                  X Min Value:
-                  <input type="number" name="arrowXMin" value="" onchange="updateChart()">
-                </label>
-                <label>
-                  X Max Value:
-                  <input type="number" name="arrowXMax" value="" onchange="updateChart()">
-                </label>
-                <label>
-                  Y Min Value:
-                  <input type="number" name="arrowYMin" value="" onchange="updateChart()">
-                </label>
-                <label>
-                  Y Max Value:
-                  <input type="number" name="arrowYMax" value="" onchange="updateChart()">
-                </label>
-                <label>
-                  Double Arrow:
-                  <select name="doubleArrow" onchange="updateChart()">
-                    <option value="true">true</option>
-                    <option value="false" selected="">false</option>
-                  </select>
-                </label>
-                <label>
-                  Label:
-                  <input type="text" name="arrowLabel" value="" onchange="updateChart()">
-                </label>
-                <label>
-                  Arrow Color:
-                  <input type="color" name="arrowColor" value="#D3D3D3" onchange="updateChart()">
-                </label>
+                <label> X Min Value: </label>
+                <input type="number" name="arrowXMin" value="" class="colby-input">
+                <label> X Max Value: </label>
+                <input type="number" name="arrowXMax" value="" class="colby-input">
+                <label> Y Min Value: </label>
+                <input type="number" name="arrowYMin" value="" class="colby-input">
+                <label> Y Max Value: </label>
+                <input type="number" name="arrowYMax" value="" class="colby-input">
+                <label> Double Arrow: </label>
+                <select name="doubleArrow" class="colby-input">
+                  <option value="true">true</option>
+                  <option value="false" selected="">false</option>
+                </select>
+                <label> Label: </label>
+                <input type="text" name="arrowLabel" value="" class="colby-input">
+                <label> Arrow Color: </label>
+                <input type="color" name="arrowColor" value="#D3D3D3" class="colby-input">
               </div>
             </div>
 
 
-            <div id="styleFields" class="tab-content" style="display: none">
-              <label>
-                Title Font:
-                <input type="text" name="titleFont" value="Lora" onchange="updateChart()">
+            <div id="style-fields" class="tab-content" style="display: none">
+              <label> Title Font: <input type="text" name="titleFont" value="Lora" class="colby-input">
               </label>
-              <label>
-                Title Color:
-                <input type="color" name="titleColor" value="#008080" onchange="updateChart()">
+              <label> Title Color: <input type="color" name="titleColor" value="#008080" class="colby-input">
               </label>
-              <label>
-                Title Size:
-                <input type="number" name="titleSize" value="18" onchange="updateChart()">
+              <label> Title Size: <input type="number" name="titleSize" value="18" class="colby-input">
               </label>
             </div>
-          </div>
+          </form>
         </div>
       </div>
 
@@ -236,36 +178,23 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
   <script>
-    function createDatasets(data, colorArray) {
-      return [
-        {
-          "label": "2017-08-02",
-          "data": [
-            "2017-08-05",
-            "2017-08-09",
-            "2017-08-12",
-            "2017-08-14"
-          ],
-          "backgroundColor": "rgba(255, 99, 132, 1)",
-          "borderColor": "rgba(0, 0, 0, 1)",
-          "borderWidth": 1
-        },
-        {
-          "label": 3,
-          "data": [
-            1,
-            4,
-            2,
-            5
-          ],
-          "backgroundColor": "rgba(75, 192, 192, 1)",
-          "borderColor": "rgba(0, 0, 0, 1)",
-          "borderWidth": 1
-        }
-      ]
+    function createDatasets(colorArray) {
+      const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July']
+
+      return {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Dataset 1',
+            data: [3, 1, 4, 2, 5, 9, 4],
+            backgroundColor: 'rgba(0, 119, 290, 0.2)',
+            borderColor: 'rgba(0, 119, 290, 0.6)'
+          }
+        ]
+      };
 
     }
-    window.colChart = {
+    window.colbyChart = {
       chartType: 'line',
       createDatasets
     }

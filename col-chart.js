@@ -1,63 +1,30 @@
 import Chart from 'chart.js/auto';
-import annotationPlugin from 'chartjs-plugin-annotation';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import AnnotationPlugin from 'chartjs-plugin-annotation';
 
-Chart.register(annotationPlugin);
+Chart.register(AnnotationPlugin);
+Chart.register(ChartDataLabels);
+
+// dragger
+const dragger = {
+    id: 'dragger',
+    beforeEvent: (chart, args, options) => {
+        if (ColbyChart?.instance?.handleDrag(args.event)) {
+            args.changed = true;
+            return;
+        }
+    }
+};
 export class ColbyChart {
     constructor(ctx, config) {
         if (!ColbyChart.instance) {
-            const dragger = {
-                id: 'dragger',
-                beforeEvent: (chart, args, options) => {
-                    if (this.handleDrag(args.event)) {
-                        args.changed = true;
-                        return;
-                    }
-                }
-            };
+
             const instance = this
-             // Initialize the instance
+            // Initialize the instance
             // Assign the instance to the ColbyChart class
             instance.element = null;
             instance.lastEvent = null;
-
-            const newConfig = {
-                type: 'line',
-                plugins: [dragger],
-                data: config.data,
-                options: {
-                    events: ['mousedown', 'mouseup', 'mousemove', 'mouseout'],
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            min: 0,
-                            max: 100
-                        }
-                    },
-                    plugins: {
-                        annotation: {
-                            enter(ctx) {
-                                instance.element = ctx.element;
-                            },
-                            leave() {
-                                instance.element = undefined;
-                                instance.lastEvent = undefined;
-                            },
-                            annotations: config?.options?.plugins?.annotation.annotations
-                        }
-                    }
-                }
-            }
-
-
-
-           
-            // 
-            if (!config.plugins) {
-                config.plugins = []
-            }
-            config.plugins.push(dragger)
-
-            this.chart = new Chart(ctx, newConfig);
+            this.chart = new Chart(ctx, config);
 
             ColbyChart.instance = this;
         }
@@ -124,61 +91,9 @@ export class ColbyChart {
 
 
 const initChart = () => {
-    const annotations = [
-        {
-            type: 'box',
-            backgroundColor: 'rgba(165, 214, 167, 0.2)',
-            borderColor: 'rgb(165, 214, 167)',
-            borderWidth: 2,
-            label: {
-                display: true,
-                content: ['Box annotation', 'to drag'],
-                textAlign: 'center'
-            },
-            xMax: 'May',
-            xMin: 'April',
-            xScaleID: 'x',
-            yMax: 75,
-            yMin: 25,
-            yScaleID: 'y'
-        },
-        {
-            type: 'point',
-            backgroundColor: 'rgba(0, 255, 255, 0.4)',
-            borderWidth: 2,
-            borderColor: 'black',
-            radius: 20,
-            xValue: 'March',
-            yValue: 50
-        }
-    ]
-
     const ctx = document.getElementById('myChart');
-    const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July']
-
-    const data = {
-        labels: labels,
-        datasets: [
-            {
-                label: 'Dataset 1',
-                data: [3, 1, 4, 2, 5, 9, 4],
-                backgroundColor: 'rgba(0, 119, 290, 0.2)',
-                borderColor: 'rgba(0, 119, 290, 0.6)'
-            }
-        ]
-    };
-    const config = {
-        data,
-        options: {
-            plugins: {
-                annotation: {
-
-                    annotations
-                }
-            }
-        }
-    }
-    new ColbyChart(ctx, config)
+    const newConfig = getInitialConfig()
+    new ColbyChart(ctx, newConfig)
 
 }
 const updateChart = () => {
@@ -186,6 +101,79 @@ const updateChart = () => {
         ColbyChart.instance.updateChart()
     }
 }
+function getInitialConfig() {
+    const colbyChart = window.colbyChart
+    let chartData = {
+        labels: [],
+        datasets: [],
+    }
+    const annotations = [
+        // {
+        //     type: 'box',
+        //     backgroundColor: 'rgba(165, 214, 167, 0.2)',
+        //     borderColor: 'rgb(165, 214, 167)',
+        //     borderWidth: 2,
+        //     label: {
+        //         display: true,
+        //         content: ['Box annotation', 'to drag'],
+        //         textAlign: 'center'
+        //     },
+        //     xMax: 'May',
+        //     xMin: 'April',
+        //     xScaleID: 'x',
+        //     yMax: 75,
+        //     yMin: 25,
+        //     yScaleID: 'y'
+        // },
+        // {
+        //     type: 'point',
+        //     backgroundColor: 'rgba(0, 255, 255, 0.4)',
+        //     borderWidth: 2,
+        //     borderColor: 'black',
+        //     radius: 20,
+        //     xValue: 'March',
+        //     yValue: 50
+        // }
+    ]
+    if (colbyChart) {
+        const { createDatasets } = colbyChart
+        const colorArray = [
+            "rgba(255, 99, 132, 1)",
+            "rgba(75, 192, 192, 1)",
+            "rgba(255, 206, 86, 1)",
+            "rgba(231, 233, 237, 1)",
+            "rgba(54, 162, 235, 1)",
+        ];
+        chartData = createDatasets(colorArray);
+    }
 
+    return {
+        type: colbyChart?.chartType ?? 'line',
+        plugins: [ChartDataLabels, dragger],
+        data: chartData,
+        options: {
+            events: ['mousedown', 'mouseup', 'mousemove', 'mouseout'],
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    min: 0,
+                    max: 100
+                }
+            },
+            plugins: {
+                annotation: {
+                    enter(ctx) {
+                        instance.element = ctx.element;
+                    },
+                    leave() {
+                        instance.element = undefined;
+                        instance.lastEvent = undefined;
+                    },
+                    annotations
+                }
+            }
+        }
+    }
+}
 export { initChart, updateChart }
 
