@@ -86,6 +86,47 @@ function updateAnnoation() {
         }
         annotationValue.annotations.line = lineAnnotation;
     }
+    // arrow annotation
+    if (arrowXMin && arrowXMax) {
+        var arrowDisplay = false;
+        if (arrowLabel) {
+            arrowDisplay = true;
+        }
+        var arrowAnnotation = {
+            type: "line",
+            borderColor: arrowColor,
+            borderWidth: 2,
+            curve: true,
+            label: {
+                display: arrowDisplay,
+                backgroundColor: "rgb(211,211,211)",
+                borderRadius: 0,
+                color: "rgb(169,169,169)",
+                content: arrowLabel,
+            },
+            arrowHeads: {
+                start: {
+                    display: doubleArrow,
+                    borderColor: arrowColor,
+                },
+                end: {
+                    display: true,
+                    borderColor: arrowColor,
+                },
+            },
+            xMin: parseFloat(arrowXMin),
+            xMax: parseFloat(arrowXMax),
+            yMin: parseFloat(arrowYMin),
+            yMax: parseFloat(arrowYMax),
+            xScaleID: "x",
+            yScaleID: "y",
+            draggable: true,
+            onDragEnd: function (e, annotation) {
+                console.log("arrow drag", annotation);
+            },
+        };
+        annotationValue.annotations.arrow = arrowAnnotation;
+    }
 
     window.colbyChartInfo.annotation = annotationValue
 }
@@ -93,6 +134,9 @@ function updateChartConfig() {
     const formData = getChartConfigFormData('#chart-config')
     console.log('[formData]', formData)
     const chartConfig = window.colbyChartInfo
+    if (!ColbyChart.instance) return
+
+    const { selectedXAxis, isSwitched, showLabel } = formData
     const chart = ColbyChart.instance.getChart()
     chartConfig.options = ColbyChart.instance.getChart().options
 
@@ -103,24 +147,6 @@ function updateChartConfig() {
 
 
 
-    const {
-        selectedXAxis,
-        lineAxis,
-        linePos,
-        lineLabel,
-        lineStyle,
-        lineColor,
-        lineThickness,
-        arrowXMin,
-        arrowXMax,
-        arrowYMin,
-        arrowYMax,
-        doubleArrow,
-        arrowLabel,
-        arrowColor,
-        showLegend,
-        isSwitched,
-        showLabel } = formData
 
     const labelAnnotationsDiv = $("#labelAnnotations");
     const boxAnnotationsDiv = $("#boxAnnotations");
@@ -181,46 +207,7 @@ function updateChartConfig() {
 
 
 
-    if (arrowXMin && arrowXMax) {
-        var arrowDisplay = false;
-        if (arrowLabel) {
-            arrowDisplay = true;
-        }
-        var arrowAnnotation = {
-            type: "line",
-            borderColor: arrowColor,
-            borderWidth: 2,
-            curve: true,
-            label: {
-                display: arrowDisplay,
-                backgroundColor: "rgb(211,211,211)",
-                borderRadius: 0,
-                color: "rgb(169,169,169)",
-                content: arrowLabel,
-            },
-            arrowHeads: {
-                start: {
-                    display: doubleArrow,
-                    borderColor: arrowColor,
-                },
-                end: {
-                    display: true,
-                    borderColor: arrowColor,
-                },
-            },
-            xMin: parseFloat(arrowXMin),
-            xMax: parseFloat(arrowXMax),
-            yMin: parseFloat(arrowYMin),
-            yMax: parseFloat(arrowYMax),
-            xScaleID: "x",
-            yScaleID: "y",
-            draggable: true,
-            onDragEnd: function (e, annotation) {
-                console.log("arrow drag", annotation);
-            },
-        };
-        annotationValue.annotations.arrow = arrowAnnotation;
-    }
+
 
     // for (var j = 0; j < boxAnnotationsDiv.children.length; j++) {
     //     var boxDiv = boxAnnotationsDiv.children[j];

@@ -125,28 +125,7 @@ const updateChart = () => {
         const chart = ColbyChart.instance.getChart()
         if (!chart) return;
         const newAnnotations = window.colbyChartInfo?.annotation?.annotations ?? {}
-        const annotations = {
-            // line2: {
-            //     id: "line2",
-            //     "type": "line",
-            //     "borderColor": "#d3d3d3",
-            //     "borderWidth": "1",
-            //     "borderDash": [
-            //         5,
-            //         5
-            //     ],
-            //     "label": {
-            //         "content": [
-            //             "Test"
-            //         ],
-            //         "display": true,
-            //         "textAlign": "center"
-            //     },
-            //     "yScaleID": "y",
-            //     "yMin": "15",
-            //     "yMax": "15"
-            // }
-        }
+        const annotations = {}
         console.log('[newAnnotations]', newAnnotations)
 
         chart.options.plugins.annotation.annotations = { ...annotations, ...newAnnotations }
@@ -160,9 +139,7 @@ function getInitialConfig() {
         labels: [],
         datasets: [],
     }
-    const annotations = {
-
-    }
+    const annotations = {}
     if (colbyChartInfo) {
         const { createDatasets } = colbyChartInfo
         const colorArray = [
