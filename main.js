@@ -1,11 +1,8 @@
-import { initChart, updateChart } from './col-chart'
+import { initChart } from './col-chart'
 import './actions';
+import { initEvent } from './event';
 
 import './style.scss'
 
 initChart()
-
-document.addEventListener("DOMContentLoaded", function () {
-    console.log("Document is ready");
-    setTimeout(updateChart, 4000);
-});
+initEvent()

@@ -16,17 +16,17 @@
         <div class="form-container">
           <canvas id="myChart" style="box-sizing: border-box; display: block; height: 450px; width: 450px;" width="450"
             height="450"></canvas>
-          <form id="chartConfig">
+          <div id="chartConfig">
 
-            <div class="tab-button active" onclick="openTab('generalFields')">
+            <div id="tab-generalFields" data-tab="generalFields" class="tab-button active">
               General
             </div>
-            <div class="tab-button" onclick="openTab('xAxisFields')">X-Axis</div>
-            <div class="tab-button" onclick="openTab('yAxisFields')">Y-Axis</div>
-            <div class="tab-button" onclick="openTab('annotationsFields')">
+            <div id="tab-xAxisFields" data-tab="xAxisFields" class="tab-button">X-Axis</div>
+            <div id="tab-yAxisFields" data-tab="yAxisFields" class="tab-button">Y-Axis</div>
+            <div id="tab-annotationsFields" data-tab="annotationsFields" class="tab-button">
               Annotations
             </div>
-            <div class="tab-button" onclick="openTab('styleFields')">Style</div>
+            <div id="tab-styleFields" data-tab="styleFields" class="tab-button">Style</div>
 
 
             <div id="generalFields" class="tab-content" style="display: block;">
@@ -109,8 +109,7 @@
 
 
             <div id="annotationsFields" class="tab-content" style="display: none">
-
-              <button type="button" class="section-button" onclick="toggleVisibility('lineAnnotation')">
+              <button type="button" class="section-button toggle-visibility" data-visibility="lineAnnotation">
                 Line Annotations
               </button>
               <div id="lineAnnotation" style="display: none">
@@ -149,7 +148,7 @@
 
 
 
-              <button type="button" class="section-button" onclick="toggleVisibility('boxAnnotations')">
+              <button type="button" class="section-button toggle-visibility" data-visibility="boxAnnotations">
                 Box Annotations
               </button>
               <div id="boxAnnotations" style="display: none"></div>
@@ -157,12 +156,12 @@
 
 
 
-              <button type="button" class="section-button" onclick="toggleVisibility('labelAnnotations')">
+              <button type="button" class="section-button toggle-visibility" data-visibility="labelAnnotations">
                 Label Annotations
               </button>
               <div id="labelAnnotations" style="display: none"></div>
 
-              <button type="button" class="section-button" onclick="toggleVisibility('arrowAnnotation')">
+              <button type="button" class="section-button toggle-visibility" data-visibility="arrowAnnotation">
                 Arrow Annotations
               </button>
               <div id="arrowAnnotation" style="display: none">
@@ -215,7 +214,7 @@
                 <input type="number" name="titleSize" value="18" onchange="updateChart()">
               </label>
             </div>
-          </form>
+          </div>
         </div>
       </div>
 
@@ -271,7 +270,7 @@
       createDatasets
     }
 
- 
+
   </script>
 
 
