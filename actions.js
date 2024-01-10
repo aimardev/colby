@@ -182,34 +182,6 @@ export function removeBoxFields(id) {
 
 
 
-export function toggleVisibility(id) {
-    var element = document.getElementById(id);
-    if (element.style.display === "none") {
-        element.style.display = "block";
-
-
-        if (id === "labelAnnotations") {
-            var labelAnnotationsDiv = document.getElementById("labelAnnotations");
-
-
-            if (labelAnnotationsDiv.children.length <= 1) {
-
-                addLabelFields();
-            }
-        }
-
-        if (id === "boxAnnotations") {
-            var boxAnnotationsDiv = document.getElementById("boxAnnotations");
-
-
-            if (boxAnnotationsDiv.children.length <= 1) {
-                addBoxFields();
-            }
-        }
-    } else {
-        element.style.display = "none";
-    }
-}
 export function renderChartIfNeeded() {
     if (chartData && defaultValues) {
         var form = document.forms.chartConfig;

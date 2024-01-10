@@ -43,17 +43,40 @@ export class ColbyChart {
         this.element.y2 += moveY;
         this.element.centerX += moveX;
         this.element.centerY += moveY;
-        const elements = this.element?.elements
-        if (elements && elements.length) {
-            for (const subEl of elements) {
-                subEl.x += moveX;
-                subEl.y += moveY;
-                subEl.x2 += moveX;
-                subEl.y2 += moveY;
-                subEl.centerX += moveX;
-                subEl.centerY += moveY;
-                subEl.bX += moveX;
-                subEl.bY += moveY;
+        const element = this.element
+        if (element) {
+            const { elements, options } = element           
+
+            if (elements && elements.length) {
+                if (options.type == 'line') {
+                    console.log('[elements]', elements, options)
+                    if (options.yScaleID) {
+                        for (const subEl of elements) {
+                            subEl.y += moveY;
+                            subEl.y2 += moveY;
+                            subEl.centerY += moveY;
+                            subEl.bY += moveY;
+                        }
+                    } else if (options.xScaleID) {
+                        for (const subEl of elements) {
+                            subEl.x += moveX;
+                            subEl.x2 += moveX;
+                            subEl.centerX += moveX;
+                            subEl.bX += moveX;
+                        }
+                    }
+                } else {
+                    for (const subEl of elements) {
+                        subEl.x += moveX;
+                        subEl.y += moveY;
+                        subEl.x2 += moveX;
+                        subEl.y2 += moveY;
+                        subEl.centerX += moveX;
+                        subEl.centerY += moveY;
+                        subEl.bX += moveX;
+                        subEl.bY += moveY;
+                    }
+                }
             }
         }
     }
@@ -83,6 +106,7 @@ export class ColbyChart {
             }
         }
     }
+
     updateChart() {
         this.chart.update();
     }
@@ -98,45 +122,82 @@ const initChart = () => {
 }
 const updateChart = () => {
     if (ColbyChart?.instance) {
+        console.log('[ColbyChart.instance.options]', ColbyChart.instance.getChart().options)
+        const chart = ColbyChart.instance.getChart()
+        if (!chart) return;
+        const newAnnotations = [
+            {                
+                type: 'line',
+                id: 'yLine',
+                yMin: 60,
+                yMax: 60,
+                yScaleID: 'y',
+                borderColor: 'rgb(255, 99, 132)',
+                borderWidth: 2,
+                label: {
+                    display: true,
+                    content: ['Line annotation'],
+                    textAlign: 'center',
+                },
+            },
+            {
+                type: 'box',
+                backgroundColor: 'rgba(165, 214, 167, 0.2)',
+                borderColor: 'rgb(165, 214, 167)',
+                borderWidth: 2,
+                label: {
+                    display: true,
+                    content: ['Box annotation', 'to drag'],
+                    textAlign: 'center'
+                },
+                xMax: 'May',
+                xMin: 'April',
+                xScaleID: 'x',
+                yMax: 75,
+                yMin: 25,
+                yScaleID: 'y'
+            },
+            {
+                type: 'box',
+                backgroundColor: 'rgba(165, 214, 167, 0.2)',
+                borderColor: 'rgb(165, 214, 167)',
+                borderWidth: 2,
+                label: {
+                    display: true,
+                    content: ['Box annotation', 'to drag'],
+                    textAlign: 'center'
+                },
+                xMax: 'May',
+                xMin: 'April',
+                xScaleID: 'x',
+                yMax: 75,
+                yMin: 25,
+                yScaleID: 'y'
+            },
+            {
+                type: 'point',
+                backgroundColor: 'rgba(0, 255, 255, 0.4)',
+                borderWidth: 2,
+                borderColor: 'black',
+                radius: 20,
+                xValue: 'March',
+                yValue: 50
+            }
+        ]
+        chart.options.plugins.annotation.annotations = newAnnotations
+
         ColbyChart.instance.updateChart()
     }
 }
 function getInitialConfig() {
-    const colbyChart = window.colbyChart
+    const colbyChartInfo = window.colbyChartInfo
     let chartData = {
         labels: [],
         datasets: [],
     }
-    const annotations = [
-        // {
-        //     type: 'box',
-        //     backgroundColor: 'rgba(165, 214, 167, 0.2)',
-        //     borderColor: 'rgb(165, 214, 167)',
-        //     borderWidth: 2,
-        //     label: {
-        //         display: true,
-        //         content: ['Box annotation', 'to drag'],
-        //         textAlign: 'center'
-        //     },
-        //     xMax: 'May',
-        //     xMin: 'April',
-        //     xScaleID: 'x',
-        //     yMax: 75,
-        //     yMin: 25,
-        //     yScaleID: 'y'
-        // },
-        // {
-        //     type: 'point',
-        //     backgroundColor: 'rgba(0, 255, 255, 0.4)',
-        //     borderWidth: 2,
-        //     borderColor: 'black',
-        //     radius: 20,
-        //     xValue: 'March',
-        //     yValue: 50
-        // }
-    ]
-    if (colbyChart) {
-        const { createDatasets } = colbyChart
+    const annotations = []
+    if (colbyChartInfo) {
+        const { createDatasets } = colbyChartInfo
         const colorArray = [
             "rgba(255, 99, 132, 1)",
             "rgba(75, 192, 192, 1)",
@@ -148,7 +209,7 @@ function getInitialConfig() {
     }
 
     return {
-        type: colbyChart?.chartType ?? 'line',
+        type: colbyChartInfo?.chartType ?? 'line',
         plugins: [ChartDataLabels, dragger],
         data: chartData,
         options: {
@@ -163,11 +224,15 @@ function getInitialConfig() {
             plugins: {
                 annotation: {
                     enter(ctx) {
-                        instance.element = ctx.element;
+                        if (ColbyChart?.instance) {
+                            ColbyChart.instance.element = ctx.element;
+                        }
                     },
                     leave() {
-                        instance.element = undefined;
-                        instance.lastEvent = undefined;
+                        if (ColbyChart?.instance) {
+                            ColbyChart.instance.element = undefined;
+                            ColbyChart.instance.lastEvent = undefined;
+                        }
                     },
                     annotations
                 }

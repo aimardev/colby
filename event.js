@@ -1,12 +1,14 @@
 
-import { toggleVisibility } from './actions';
-import { updateChart } from './col-chart'// windows event 
+import { updateChart as updateColChart, ColbyChart} from './col-chart'// windows event 
 // import { openTab } from './actions';
 import jQuery from "jquery";
 
-
-function getChartConfigFormData() {
-    const form = jQuery('#chart-config');
+function updateChart() {
+    updateChartConfig()
+    updateColChart();
+}
+function getChartConfigFormData(ref) {
+    const form = jQuery(ref);
     const formData = form.serializeArray();
     const formDataObject = {}
     formData.forEach(function ({ name, value }) {
@@ -14,9 +16,13 @@ function getChartConfigFormData() {
     });
     return formDataObject
 }
-function getChartConfig() {
-    const formData = getChartConfigFormData()
+function updateChartConfig() {
+    const formData = getChartConfigFormData('#chart-config')
     console.log('[formData]', formData)
+    const chartConfig = window.colbyChartInfo
+    const chart = ColbyChart.instance.getChart()    
+    chartConfig.options = ColbyChart.instance.getChart().options
+
     /**
      * {
     "title": "Default Title",
@@ -47,71 +53,56 @@ function getChartConfig() {
 }
      */
 
-    const selectedXAxis = +formData.xAxisDataset;
-    var selectedDatasets = Array.from(
-        document.querySelectorAll("#plotDatasetsCheckboxes input:checked")
-    ).map((checkbox) => parseInt(checkbox.value));
-    console.log("chartData", chartData);
-    const datasets = createDatasets(chartData, [
-        "rgba(255, 99, 132, 1)",
-        "rgba(75, 192, 192, 1)",
-        "rgba(255, 206, 86, 1)",
-        "rgba(231, 233, 237, 1)",
-        "rgba(54, 162, 235, 1)",
-    ]);
 
 
-    // var lineAxis = form.lineAxis.value;
-    // var linePos = form.linePos.value;
-    // var lineLabel = form.lineLabel.value;
-    // var lineStyle = form.lineStyle.value;
-    // var lineColor = form.lineColor.value;
-    // var lineThickness = form.lineThickness.value;
-    // var arrowXMin = form.arrowXMin.value;
-    // var arrowXMax = form.arrowXMax.value;
-    // var arrowYMin = form.arrowYMin.value;
-    // var arrowYMax = form.arrowYMax.value;
-    // var doubleArrow = form.doubleArrow.value === "true";
-    // var arrowLabel = form.arrowLabel.value;
-    // var arrowColor = form.arrowColor.value;
-    // var labelAnnotationsDiv = document.getElementById("labelAnnotations");
-    // var boxAnnotationsDiv = document.getElementById("boxAnnotations");
-    // var showLegend = form.legendCheck.checked;
-    // var showLabel = form.labelCheck.checked;
-    // console.log("boxAnnotationsDiv:", boxAnnotationsDiv);
-    // var isSwitched = form.switch.value;
+    const { 
+        lineAxis,
+        linePos,
+        lineLabel,
+        lineStyle,
+        lineColor,
+        lineThickness,
+        arrowXMin,
+        arrowXMax,
+        arrowYMin,
+        arrowYMax,
+        doubleArrow,
+        arrowLabel,
+        arrowColor,
+        showLegend,
+        isSwitched,
+        showLabel } = formData
 
-    // if (isSwitched === "true") {
-
+    const labelAnnotationsDiv = $("#labelAnnotations");
+    const boxAnnotationsDiv = $("#boxAnnotations");
 
 
+    if (isSwitched === "true") {
+        chartConfig.options.indexAxis = "y";
+    } else if (chartConfig.options.indexAxis == "y") {
+        delete chartConfig.options.indexAxis;
+    }
 
-    //     chartConfig.options.indexAxis = "y";
-    // } else if (chartConfig.options.indexAxis == "y") {
-    //     delete chartConfig.options.indexAxis;
-    // }
+    chartConfig.options.scales.x.title.text = datasets[selectedXAxis].label;
 
-    // chartConfig.options.scales.x.title.text = datasets[selectedXAxis].label;
-
-
-    // chartConfig.options.scales.y.title.text =
-    //     isSwitched === "true" ? datasets[selectedXAxis].label : form.yTitle.value;
-    // chartConfig.data.labels = datasets[selectedXAxis].data;
-    // chartConfig.data.datasets = selectedDatasets.map(
-    //     (datasetIndex) => datasets[datasetIndex]
-    // );
-    // var xMinValue = Math.max(...datasets[selectedXAxis].data);
-    // var xMaxValue = Math.min(...datasets[selectedXAxis].data);
-    // var yMinValue = Math.min(
-    //     ...selectedDatasets.map((datasetIndex) =>
-    //         Math.min(...datasets[datasetIndex].data)
-    //     )
-    // );
-    // var yMaxValue = Math.max(
-    //     ...selectedDatasets.map((datasetIndex) =>
-    //         Math.max(...datasets[datasetIndex].data)
-    //     )
-    // );
+    chartConfig.options.scales.y.title.text =
+        isSwitched === "true" ? datasets[selectedXAxis].label : form.yTitle.value;
+    chartConfig.data.labels = datasets[selectedXAxis].data;
+    chartConfig.data.datasets = selectedDatasets.map(
+        (datasetIndex) => datasets[datasetIndex]
+    );
+    var xMinValue = Math.max(...datasets[selectedXAxis].data);
+    var xMaxValue = Math.min(...datasets[selectedXAxis].data);
+    var yMinValue = Math.min(
+        ...selectedDatasets.map((datasetIndex) =>
+            Math.min(...datasets[datasetIndex].data)
+        )
+    );
+    var yMaxValue = Math.max(
+        ...selectedDatasets.map((datasetIndex) =>
+            Math.max(...datasets[datasetIndex].data)
+        )
+    );
 
     // chartConfig.options.plugins.title.text = form.title.value;
     // chartConfig.options.plugins.title.font = {
@@ -352,6 +343,37 @@ function onOpenTabClick(buttonTabId, tabId) {
     jQuery(`#${buttonTabId}`).addClass('active')
 }
 
+export function onToggleVisibility(ele) {
+    const ref = ele.data('ref');
+    const visibility = ele.data('visibility');
+    console.log('[visibility]', ref, visibility)
+
+    if (visibility == "true") {
+        ele.data('visibility', 'false')
+    } else {
+        ele.data('visibility', 'true')
+    }
+    if (jQuery(ref)) {
+        if (ele.data('visibility') == 'true') {
+            jQuery(ref).show()
+        } else {
+            jQuery(ref).hide()
+
+        }
+    }
+
+
+
+    switch (ref) {
+        case "#lineAnnotation": {
+        }
+        case "#labelAnnotations": {
+        }
+        case "#boxAnnotations": {
+        }
+    }
+}
+
 const initEvent = () => {
     // register
     document.addEventListener("DOMContentLoaded", function () {
@@ -367,22 +389,21 @@ const initEvent = () => {
     })
     // toggle-visibility click
     jQuery('.toggle-visibility').on('click', function () {
-        const visibility = jQuery(this).data('visibility');
-        toggleVisibility(visibility)
+        const element = jQuery(this)
+        onToggleVisibility(element)
+
     });
+
     // colby-input Change
     jQuery('.colby-input').on('change', function () {
-        // const visibility = jQuery(this).data('visibility');
-        // toggleVisibility(visibility)
         console.log('[colby-input] change')
-        getChartConfig()
+        updateChart()
     });
+
     // colby-select change
     jQuery('.colby-select').on('change', function () {
-        // const visibility = jQuery(this).data('visibility');
-        // toggleVisibility(visibility)
         console.log('[colby-select update] updateSelectOptions')
-        getChartConfig()
+        updateChart()
     });
 }
 
