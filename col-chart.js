@@ -2,72 +2,126 @@ import Chart from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
 
 Chart.register(annotationPlugin);
+export class ColbyChart {
+    constructor(ctx, config) {
+        if (!ColbyChart.instance) {
+            const dragger = {
+                id: 'dragger',
+                beforeEvent: (chart, args, options) => {
+                    if (this.handleDrag(args.event)) {
+                        args.changed = true;
+                        return;
+                    }
+                }
+            };
+            const instance = this
+             // Initialize the instance
+            // Assign the instance to the ColbyChart class
+            instance.element = null;
+            instance.lastEvent = null;
 
-let element;
-let lastEvent;
+            const newConfig = {
+                type: 'line',
+                plugins: [dragger],
+                data: config.data,
+                options: {
+                    events: ['mousedown', 'mouseup', 'mousemove', 'mouseout'],
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            min: 0,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        annotation: {
+                            enter(ctx) {
+                                instance.element = ctx.element;
+                            },
+                            leave() {
+                                instance.element = undefined;
+                                instance.lastEvent = undefined;
+                            },
+                            annotations: config?.options?.plugins?.annotation.annotations
+                        }
+                    }
+                }
+            }
 
-export const drag = function (moveX, moveY) {
-    element.x += moveX;
-    element.y += moveY;
-    element.x2 += moveX;
-    element.y2 += moveY;
-    element.centerX += moveX;
-    element.centerY += moveY;
-    if (element.elements && element.elements.length) {
-        for (const subEl of element.elements) {
-            subEl.x += moveX;
-            subEl.y += moveY;
-            subEl.x2 += moveX;
-            subEl.y2 += moveY;
-            subEl.centerX += moveX;
-            subEl.centerY += moveY;
-            subEl.bX += moveX;
-            subEl.bY += moveY;
+
+
+           
+            // 
+            if (!config.plugins) {
+                config.plugins = []
+            }
+            config.plugins.push(dragger)
+
+            this.chart = new Chart(ctx, newConfig);
+
+            ColbyChart.instance = this;
+        }
+        // Return the instance
+        return ColbyChart.instance;
+    }
+
+    getChart() {
+        return this.chart;
+    }
+
+    drag(moveX, moveY) {
+        this.element.x += moveX;
+        this.element.y += moveY;
+        this.element.x2 += moveX;
+        this.element.y2 += moveY;
+        this.element.centerX += moveX;
+        this.element.centerY += moveY;
+        const elements = this.element?.elements
+        if (elements && elements.length) {
+            for (const subEl of elements) {
+                subEl.x += moveX;
+                subEl.y += moveY;
+                subEl.x2 += moveX;
+                subEl.y2 += moveY;
+                subEl.centerX += moveX;
+                subEl.centerY += moveY;
+                subEl.bX += moveX;
+                subEl.bY += moveY;
+            }
         }
     }
-};
-
-export const handleElementDragging = function (event) {
-    if (!lastEvent || !element) {
-        return;
-    }
-    const moveX = event.x - lastEvent.x;
-    const moveY = event.y - lastEvent.y;
-    drag(moveX, moveY);
-    lastEvent = event;
-    return true;
-};
-
-export const handleDrag = function (event) {
-    if (element) {
-        switch (event.type) {
-            case 'mousemove':
-                return handleElementDragging(event);
-            case 'mouseout':
-            case 'mouseup':
-                lastEvent = undefined;
-                break;
-            case 'mousedown':
-                lastEvent = event;
-                break;
-            default:
-        }
-    }
-};
-const dragger = {
-    id: 'dragger',
-    beforeEvent(chart, args, options) {
-
-        if (handleDrag(args.event)) {
-            args.changed = true;
+    handleElementDragging(event) {
+        if (!this.lastEvent || !this.element) {
             return;
         }
+        const moveX = event.x - this.lastEvent.x;
+        const moveY = event.y - this.lastEvent.y;
+        this.lastEvent = event;
+        this.drag(moveX, moveY);
+        return true;
     }
-};
+    handleDrag(event) {
+        if (this.element) {
+            switch (event.type) {
+                case 'mousemove':
+                    return this.handleElementDragging(event);
+                case 'mouseout':
+                case 'mouseup':
+                    this.lastEvent = undefined;
+                    break;
+                case 'mousedown':
+                    this.lastEvent = event;
+                    break;
+                default:
+            }
+        }
+    }
+    updateChart() {
+        this.chart.update();
+    }
 
+}
 
-
-let chartInstance = null;
 
 const initChart = () => {
     const annotations = [
@@ -114,38 +168,24 @@ const initChart = () => {
         ]
     };
     const config = {
-        type: 'line',
-        plugins: [dragger],
         data,
         options: {
-            events: ['mousedown', 'mouseup', 'mousemove', 'mouseout'],
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    min: 0,
-                    max: 100
-                }
-            },
             plugins: {
                 annotation: {
-                    enter(ctx) {
-                        element = ctx.element;
-                    },
-                    leave() {
-                        element = undefined;
-                        lastEvent = undefined;
-                    },
+
                     annotations
                 }
             }
         }
     }
+    new ColbyChart(ctx, config)
 
-    chartInstance = new Chart(ctx, config);
+}
+const updateChart = () => {
+    if (ColbyChart?.instance) {
+        ColbyChart.instance.updateChart()
+    }
 }
 
-const updateChart = (data) => {
-    chartInstance.update();
-}
-export { chartInstance, initChart, updateChart }
+export { initChart, updateChart }
 
