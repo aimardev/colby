@@ -5,13 +5,17 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 33333",
-    "build": "vite build",
+    "build": "vite build --config ./vite.config.js --watch",
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^5.0.8"
+    "@vitejs/plugin-basic-ssl": "^1.0.2",
+    "vite": "^5.0.8",
+    "vite-plugin-mkcert": "^1.17.2"
   },
   "dependencies": {
-    "chart.js": "^4.4.1"
+    "chart.js": "^4.4.1",
+    "chartjs-plugin-annotation": "^3.0.1",
+    "http-server": "^14.1.1"
   }
 }
